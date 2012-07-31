@@ -7,4 +7,4 @@ javaでIRC実装
 サーバーを立てる
 java ChatServer
 クライアントソフト起動
-java GUIChatClient
+java GUIChatClient ADDRESS PORT
