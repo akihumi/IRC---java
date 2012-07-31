@@ -15,6 +15,7 @@ public class ChatServer {
     private static ServerSocket server;
     private static QueueManager queue;
     private static ServerCommand command;
+    private static String user_name;
     /**
      * メインメソッド(スレッド)です。
      * 各種サーバー起動準備を整えて、ソケットをオープンし

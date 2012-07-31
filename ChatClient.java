@@ -11,7 +11,7 @@ public class ChatClient {
     private String address, port;
     private JTextField text_field;
     private JTextArea text_area;
-    private String user_name;
+    private String user_name, before_user_name;
     private Socket connect;
     private PrintWriter out;
 
@@ -41,6 +41,29 @@ public class ChatClient {
             text_field.setText("");
             out.println(sendMessage.toString());
             out.flush();
+        }catch(NullPointerException e){
+            System.out.println("ぬるぽ");
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+    // 初回起動や名前が変更された時によばれる
+    public void loginMessage(String name, boolean flag){
+        try{
+            StringBuilder sendMessage = new StringBuilder();
+            if(flag){
+                sendMessage.append(name);
+                sendMessage.append(" さんがログインしました。");
+            }else{
+                sendMessage.append(name);
+                sendMessage.append(" に ");
+                sendMessage.append(before_user_name);
+                sendMessage.append(" さんのユーザー名が変更されます");
+            }
+            out.println(sendMessage.toString());
+            out.flush();
+            // 前のuser_nameを記憶しておく
+            before_user_name = name;
         }catch(NullPointerException e){
             System.out.println("ぬるぽ");
         }catch(Exception e){

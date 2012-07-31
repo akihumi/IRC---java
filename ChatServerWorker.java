@@ -17,6 +17,8 @@ public class ChatServerWorker extends Thread {
     private ChatServer.QueueManager qm;
     private Long id;
     private InetAddress ip;
+    private String user_name;
+
     /**
      * 接続済みSocketとQueueManagerを使用してインスタンスを生成します。
      *
@@ -29,6 +31,7 @@ public class ChatServerWorker extends Thread {
     {
         this.qm = qm;
         this.connect = connect;
+        
         // TODO: 各種フィールドの初期化もここでおこなっておくこと。
         out = new PrintWriter(new OutputStreamWriter(connect.getOutputStream()));
         in = new BufferedReader(new InputStreamReader(connect.getInputStream()));
@@ -49,9 +52,15 @@ public class ChatServerWorker extends Thread {
                 // TODO: 投稿内容の読み取り(場合によってはブロック)
                 String message = null;
                 message = in.readLine();
+                // ユーザーネームを抜き取る
+                try{
+                    user_name = message.split("[\\s+]+")[0];
+                }catch(NullPointerException ne){
+                    break;
+                }
                 // TODO: もし、内容が null または "exit" ならば
                 //       そのタイミングで終了です。
-                if(message == null || message.equals("exit")){
+                if(message == null || message.equals("exit") || user_name == null){
                     break;
                 }
                 // TODO: タイムスタンプを YYYY-MM-DD HH:MM:SS.ms 形式で生成
@@ -63,7 +72,7 @@ public class ChatServerWorker extends Thread {
                 str.append(time.format(date));
                 if(ms < 10) str.append(0);
                 str.append(ms);
-                str.append(" "); 
+                str.append(" ");
                 str.append(message);
                 // TODO: タイムスタンプ文字列と投稿内容を合成した文字列を
                 //       キューマネージャーへ登録
@@ -83,6 +92,7 @@ public class ChatServerWorker extends Thread {
             connect.close();
         } catch (IOException ioe) {
             System.err.println("worker: " + ioe);
+            ioe.printStackTrace();
             return;
         }
     }
@@ -102,8 +112,8 @@ public class ChatServerWorker extends Thread {
     // スレッドのIDとipアドレスを文字列で返す
     public String getConnect(){
         StringBuilder str = new StringBuilder();
-        // str.append("UserName:");
-        // str.append(GUIChatClient.getUserName());
+        str.append("UserName:");
+        str.append(user_name);
         str.append(" IP:");
         str.append(ip);
         str.append(" ID:");
